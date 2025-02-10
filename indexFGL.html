@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FGL42 - Ferramenta SWOT</title>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Open Sans', sans-serif;
+        }
+
+        body {
+            background: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: #597cff;
+            padding: 15px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+        }
+
+        .swot-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .quadrant {
+            padding: 20px;
+            border-radius: 30px;
+            border-width: 4px;
+            border-style: solid;
+            height: 238px;
+        }
+
+        #strengths {
+            background: rgba(92, 225, 230, 0.4);
+            border-color: #385d8e;
+        }
+
+        #weaknesses {
+            background: rgba(0, 191, 99, 0.4);
+            border-color: #327053;
+        }
+
+        #opportunities {
+            background: rgba(255, 222, 89, 0.4);
+            border-color: #867634;
+        }
+
+        #threats {
+            background: rgba(255, 49, 49, 0.4);
+            border-color: #773333;
+        }
+
+        textarea {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: transparent;
+            resize: none;
+            font-size: 16px;
+            padding: 10px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        button {
+            padding: 10px 30px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        #print-btn {
+            background: #004aad;
+            color: white;
+        }
+
+        #save-btn {
+            background: #00bf63;
+            color: white;
+        }
+
+        #generate-btn {
+            background: #004aad;
+            color: white;
+            width: 100%;
+            padding: 15px;
+            font-size: 1.2em;
+        }
+
+        .report-section {
+            background: white;
+            border: 2px solid #ab8da6;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <input type="text" placeholder="Empresa" style="width: 100%; margin-bottom: 10px; padding: 10px; border-radius: 10px">
+            <input type="text" placeholder="Situação problema" style="width: 100%; margin-bottom: 10px; padding: 10px; border-radius: 10px">
+            <input type="text" placeholder="Objetivo da análise" style="width: 100%; padding: 10px; border-radius: 10px">
+        </div>
+
+        <div class="swot-grid">
+            <div class="quadrant" id="strengths">
+                <textarea placeholder="Forças"></textarea>
+            </div>
+            <div class="quadrant" id="weaknesses">
+                <textarea placeholder="Fraquezas"></textarea>
+            </div>
+            <div class="quadrant" id="opportunities">
+                <textarea placeholder="Oportunidades"></textarea>
+            </div>
+            <div class="quadrant" id="threats">
+                <textarea placeholder="Ameaças"></textarea>
+            </div>
+        </div>
+
+        <button id="generate-btn">Gerar Recomendações</button>
+
+        <div class="controls">
+            <button id="print-btn">Imprimir</button>
+            <button id="save-btn">Salvar</button>
+        </div>
+
+        <div id="report" style="display: none;">
+            <div class="report-section">
+                <h3>Aumentando as Forças</h3>
+                <p id="strengths-report"></p>
+            </div>
+            <div class="report-section">
+                <h3>Aproveitando as Oportunidades</h3>
+                <p id="opportunities-report"></p>
+            </div>
+            <div class="report-section">
+                <h3>Eliminando as Fraquezas</h3>
+                <p id="weaknesses-report"></p>
+            </div>
+            <div class="report-section">
+                <h3>Evitando as Ameaças</h3>
+                <p id="threats-report"></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Função de Salvamento
+        document.getElementById('save-btn').addEventListener('click', () => {
+            const data = {
+                strengths: document.getElementById('strengths').value,
+                weaknesses: document.getElementById('weaknesses').value,
+                opportunities: document.getElementById('opportunities').value,
+                threats: document.getElementById('threats').value
+            };
+            localStorage.setItem('swotData', JSON.stringify(data));
+            alert('Dados salvos com sucesso!');
+        });
+
+        // Função de Carregamento
+        window.addEventListener('load', () => {
+            const savedData = localStorage.getItem('swotData');
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                document.getElementById('strengths').value = data.strengths;
+                document.getElementById('weaknesses').value = data.weaknesses;
+                document.getElementById('opportunities').value = data.opportunities;
+                document.getElementById('threats').value = data.threats;
+            }
+        });
+
+        // Função de Impressão
+        document.getElementById('print-btn').addEventListener('click', () => {
+            window.print();
+        });
+
+        // Integração com IA (Exemplo usando OpenAI)
+        document.getElementById('generate-btn').addEventListener('click', async () => {
+            const prompt = `Com base nesta análise SWOT:
+Forças: ${document.getElementById('strengths').value}
+Fraquezas: ${document.getElementById('weaknesses').value}
+Oportunidades: ${document.getElementById('opportunities').value}
+Ameaças: ${document.getElementById('threats').value}
+
+Gere recomendações estratégicas em português usando tópicos curtos para:`;
+
+            try {
+                const response = await fetch('https://api.openai.com/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer '
+                    },
+                    body: JSON.stringify({
+                        model: "gpt-3.5-turbo",
+                        messages: [{
+                            role: "user",
+                            content: prompt
+                        }]
+                    })
+                });
+
+                const data = await response.json();
+                const recommendations = data.choices[0].message.content;
+                
+                // Processar resposta e exibir nos locais adequados
+                document.getElementById('report').style.display = 'block';
+                // ... lógica para dividir a resposta nas seções corretas
+                
+            } catch (error) {
+                console.error('Erro na geração com IA:', error);
+                alert('Erro ao gerar recomendações. Tente novamente.');
+            }
+        });
+    </script>
+</body>
+</html>
